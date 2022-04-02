@@ -24,8 +24,10 @@ type Comment struct {
 }
 
 type Room struct {
-	ID           IDType   `json:"id"`
-	Users        []IDType `json:"users"`
-	SmallTasks   []IDType `json:"smallTasks"`
-	ComplexTasks []IDType `json:"complexTasks"`
+	ID                   IDType                 `json:"id"`
+	Users                []IDType               `json:"users"`
+	SmallTasks           []IDType               `json:"smallTasks"`
+	ComplexTasks         []IDType               `json:"complexTasks"`
+	SmallTasksProgress   map[string]([]bool)    `json:"smallTasksProgress"`
+	ComplexTasksProgress map[string]([]float32) `json:"complexTasksProgress"`
 }

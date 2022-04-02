@@ -81,11 +81,42 @@ func (app *App) DeleteRoomHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+func (app *App) PostUser(w http.ResponseWriter, r *http.Request) {
+}
+
+func (app *App) DeleteUser(w http.ResponseWriter, r *http.Request) {
+}
+
+func (app *App) PostSimpleTask(w http.ResponseWriter, r *http.Request) {
+}
+
+func (app *App) UpdateSimpleTask(w http.ResponseWriter, r *http.Request) {
+}
+
+func (app *App) DeleteSimpleTask(w http.ResponseWriter, r *http.Request) {
+}
+
+func (app *App) PostComplexTask(w http.ResponseWriter, r *http.Request) {
+}
+
+func (app *App) UpdateComplexTask(w http.ResponseWriter, r *http.Request) {
+}
+
+func (app *App) DeleteComplexTask(w http.ResponseWriter, r *http.Request) {
+}
+
 func main() {
 	fmt.Println("Hello Hacknarok2022")
 	app := App{}
 	app.Rooms = []Room{
-		{ID: "1000"},
+		{
+			ID:                   "1000",
+			Users:                []IDType{"1", "2"},
+			SmallTasks:           []IDType{"1", "2"},
+			ComplexTasks:         []IDType{"1", "2"},
+			SmallTasksProgress:   map[string]([]bool){"aaaa": []bool{true, false}},
+			ComplexTasksProgress: map[string]([]float32){"aaaa": []float32{0.5, 0.9}},
+		},
 		{ID: "1001"},
 		{ID: "1002"},
 		{ID: "1003"},
