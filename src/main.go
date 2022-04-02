@@ -10,86 +10,79 @@ import (
 	"github.com/gorilla/mux"
 )
 
-type Article struct {
-	Id      string `json:"Id"`
-	Title   string `json:"Title"`
-	Desc    string `json:"desc"`
-	Content string `json:"content"`
+type App struct {
+	Rooms []Room
 }
 
-var Articles []Article
+func (app *App) handleRequests() {
+	router := mux.NewRouter().StrictSlash(true)
 
-func homePage(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintf(w, "Welcome to the HomePage!")
-	fmt.Println("Endpoint Hit: homePage")
+	router.HandleFunc("/", app.HomeHandler)
+	router.HandleFunc("/room/{id}", app.GetRoomHandler).Methods("GET")
+	router.HandleFunc("/room", app.PostRoomHandler).Methods("POST")
+	router.HandleFunc("/room/{id}", app.DeleteRoomHandler).Methods("DELETE")
+
+	log.Fatal(http.ListenAndServe(":10000", router))
 }
 
-func returnAllArticles(w http.ResponseWriter, r *http.Request) {
-	fmt.Println("Endpoint Hit: returnAllArticles")
-	json.NewEncoder(w).Encode(Articles)
+func (app *App) HomeHandler(w http.ResponseWriter, r *http.Request) {
+	fmt.Println("Endpoint Hit: HomeHandler")
+	fmt.Fprintf(w, "/")
 }
 
-func returnSingleArticle(w http.ResponseWriter, r *http.Request) {
-	vars := mux.Vars(r)
-	key := vars["id"]
+func (app *App) GetRoomHandler(w http.ResponseWriter, r *http.Request) {
+	fmt.Println("Endpoint Hit: GetRoomHandler")
 
-	for _, article := range Articles {
-		if article.Id == key {
-			json.NewEncoder(w).Encode(article)
+	id, ok := mux.Vars(r)["id"]
+	if !ok {
+		return
+	}
+
+	for _, room := range app.Rooms {
+		if room.ID == IDType(id) {
+			json.NewEncoder(w).Encode(room)
+			return
 		}
 	}
+
 }
 
-func createNewArticle(w http.ResponseWriter, r *http.Request) {
-	// get the body of our POST request
-	// unmarshal this into a new Article struct
-	// append this to our Articles array.
+func (app *App) PostRoomHandler(w http.ResponseWriter, r *http.Request) {
+	fmt.Println("Endpoint Hit: PostRoomHandler")
 	reqBody, _ := ioutil.ReadAll(r.Body)
-	var article Article
-	json.Unmarshal(reqBody, &article)
-	// update our global Articles array to include
-	// our new Article
-	Articles = append(Articles, article)
+	var room Room
 
-	json.NewEncoder(w).Encode(article)
-}
-
-func deleteArticle(w http.ResponseWriter, r *http.Request) {
-	// once again, we will need to parse the path parameters
-	vars := mux.Vars(r)
-	// we will need to extract the `id` of the article we
-	// wish to delete
-	id := vars["id"]
-
-	// we then need to loop through all our articles
-	for index, article := range Articles {
-		// if our id path parameter matches one of our
-		// articles
-		if article.Id == id {
-			// updates our Articles array to remove the
-			// article
-			Articles = append(Articles[:index], Articles[index+1:]...)
-		}
+	if err := json.Unmarshal(reqBody, &room); err != nil {
+		return
 	}
 
+	app.Rooms = append(app.Rooms, room)
+	json.NewEncoder(w).Encode(room)
 }
 
-// Existing code from above
-func handleRequests() {
-	myRouter := mux.NewRouter().StrictSlash(true)
-	myRouter.HandleFunc("/", homePage)
-	myRouter.HandleFunc("/articles", returnAllArticles)
-	myRouter.HandleFunc("/article", createNewArticle).Methods("POST")
-	myRouter.HandleFunc("/article/{id}", deleteArticle).Methods("DELETE")
-	myRouter.HandleFunc("/article/{id}", returnSingleArticle)
-	log.Fatal(http.ListenAndServe(":10000", myRouter))
+func (app *App) DeleteRoomHandler(w http.ResponseWriter, r *http.Request) {
+	id, ok := mux.Vars(r)["id"]
+	if !ok {
+		return
+	}
+
+	for idx, room := range app.Rooms {
+		if room.ID == IDType(id) {
+			app.Rooms = append(app.Rooms[:idx], app.Rooms[idx+1:]...)
+			json.NewEncoder(w).Encode(room)
+			return
+		}
+	}
 }
 
 func main() {
-	fmt.Println("Rest API v2.0 - Mux Routers")
-	Articles = []Article{
-		{Id: "1", Title: "Hello", Desc: "Article Description", Content: "Article Content"},
-		{Id: "2", Title: "Hello 2", Desc: "Article Description", Content: "Article Content"},
+	fmt.Println("Hello Hacknarok2022")
+	app := App{}
+	app.Rooms = []Room{
+		{ID: "1000"},
+		{ID: "1001"},
+		{ID: "1002"},
+		{ID: "1003"},
 	}
-	handleRequests()
+	app.handleRequests()
 }

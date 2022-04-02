@@ -1,6 +1,6 @@
 package main
 
-type IDType uint
+type IDType string
 
 type User struct {
 	ID   IDType `json:"id"`
