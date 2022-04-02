@@ -2,32 +2,15 @@ package main
 
 type IDType string
 
-type User struct {
-	ID   IDType `json:"id"`
-	Name string `json:"name"`
-}
-
-type SmallTask struct {
-	ID   IDType `json:"id"`
-	Name string `json:"name"`
-}
-
-type ComplexTask struct {
-	ID   IDType `json:"id"`
-	Name string `json:"name"`
-}
-
 type Comment struct {
-	ID      IDType `json:"id"`
 	UserID  IDType `json:"user_id"`
 	Conetnt string `json:"content"`
 }
 
 type Room struct {
-	ID                   IDType                 `json:"id"`
-	Users                []IDType               `json:"users"`
-	SmallTasks           []IDType               `json:"smallTasks"`
-	ComplexTasks         []IDType               `json:"complexTasks"`
-	SmallTasksProgress   map[string]([]bool)    `json:"smallTasksProgress"`
-	ComplexTasksProgress map[string]([]float32) `json:"complexTasksProgress"`
+	ID           IDType                 `json:"id"`
+	Users        []string               `json:"users"`
+	SmallTasks   map[string]([]bool)    `json:"smallTasks"`
+	ComplexTasks map[string]([]float32) `json:"complexTasks"`
+	Comments     []Comment              `json:"comments"`
 }
