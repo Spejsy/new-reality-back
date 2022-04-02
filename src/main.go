@@ -35,6 +35,7 @@ func (app *App) GetRoomHandler(w http.ResponseWriter, r *http.Request) {
 
 	id, ok := mux.Vars(r)["id"]
 	if !ok {
+		fmt.Println("Error: No id parameter found.")
 		return
 	}
 
@@ -45,6 +46,7 @@ func (app *App) GetRoomHandler(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
+	fmt.Println("Error: Room with specified id not found.")
 }
 
 func (app *App) PostRoomHandler(w http.ResponseWriter, r *http.Request) {
@@ -53,16 +55,19 @@ func (app *App) PostRoomHandler(w http.ResponseWriter, r *http.Request) {
 	var room Room
 
 	if err := json.Unmarshal(reqBody, &room); err != nil {
+		fmt.Println("Error: Problem with parsing received JSON.")
 		return
 	}
 
 	app.Rooms = append(app.Rooms, room)
 	json.NewEncoder(w).Encode(room)
+	fmt.Println("Room has been posted, id: " + room.ID)
 }
 
 func (app *App) DeleteRoomHandler(w http.ResponseWriter, r *http.Request) {
 	id, ok := mux.Vars(r)["id"]
 	if !ok {
+		fmt.Println("Error: No id parameter found.")
 		return
 	}
 
@@ -70,6 +75,7 @@ func (app *App) DeleteRoomHandler(w http.ResponseWriter, r *http.Request) {
 		if room.ID == IDType(id) {
 			app.Rooms = append(app.Rooms[:idx], app.Rooms[idx+1:]...)
 			json.NewEncoder(w).Encode(room)
+			fmt.Println("Room has been deleted, id: " + id)
 			return
 		}
 	}
